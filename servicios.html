@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Servicios | INFYMSA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .cart-badge{animation:pulse 2s infinite}
+    .nav-item:hover{transform:translateY(-1px);transition:all .3s ease}
+    .mobile-menu{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}
+    .mobile-menu.open{max-height:500px}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+  </style>
+</head>
+<body class="bg-gray-50">
+
+  <!-- ======= HEADER ======= -->
+  <header class="w-full bg-white shadow-lg">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex-shrink-0 flex items-center">
+            <div class="bg-white rounded-full p-2 mr-3">
+              <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold text-sm">I</span>
+              </div>
+            </div>
+            <div class="text-white">
+              <h1 class="text-xl font-bold">INFYMSA</h1>
+              <p class="text-xs opacity-90">Soluciones Industriales</p>
+            </div>
+          </div>
+
+          <!-- Nav -->
+          <nav class="hidden md:flex space-x-8">
+            <a href="index.html" class="nav-item text-white hover:text-blue-200 px-3 py-2 text-sm font-medium">INICIO</a>
+            <a href="nosotros.html" class="nav-item text-white hover:text-blue-200 px-3 py-2 text-sm font-medium">NOSOTROS</a>
+            <a href="catalogo.html" class="nav-item text-white hover:text-blue-200 px-3 py-2 text-sm font-medium">CATÁLOGO</a>
+            <a href="contacto.html" class="nav-item text-white hover:text-blue-200 px-3 py-2 text-sm font-medium">CONTACTO</a>
+          </nav>
+
+          <!-- Right -->
+          <div class="flex items-center space-x-4">
+            <button class="text-white hover:text-blue-200 transition-colors duration-200" id="searchBtn" aria-label="Buscar">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </button>
+
+            <!-- Menú de usuario -->
+            <div class="relative overflow-visible">
+              <button class="text-white hover:text-blue-200 transition-colors duration-200" id="userBtn" aria-label="Usuario">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </button>
+              <div id="userMenu"
+                   class="invisible opacity-0 pointer-events-none absolute right-0 top-full mt-2 w-48 z-50
+                          rounded-xl bg-white text-gray-700 shadow-xl ring-1 ring-black/5
+                          transition-all duration-200">
+                <a href="/PG21.0/proyecto/auth/login.html" class="block px-4 py-2 hover:bg-gray-50">Iniciar sesión</a>
+                <a href="/PG21.0/proyecto/auth/register.html" class="block px-4 py-2 hover:bg-gray-50">Registrarse</a>
+              </div>
+            </div>
+
+        <!--el carrito-->
+            <a id="cart-link" href="/PG21.0/proyecto/carrito.html" class="relative inline-flex items-center" title="Ver carrito">
+  <!-- icono carrito -->
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:#fff">
+    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm9 0c-1.1 0-2 .9-2 2s.9 2 2 2
+             2-.9 2-2-.9-2-2-2zM7.16 14h8.69c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20.36 5H6.21L5.27 3H2v2h2l3.6 7.59-.95 1.72C5.24 15.37 6.1 17 7.66 17H19v-2H7.42l.74-1z"/>
+  </svg>
+  <span id="cart-count"
+        style="position:absolute; top:-6px; right:-8px; background:#e11d48; color:#fff; font-size:11px;
+               line-height:1; padding:3px 6px; border-radius:9999px; min-width:18px; text-align:center; display:none;">0</span>
+</a>
+  
+            <!-- Menú móvil -->
+            <button class="md:hidden text-white hover:text-blue-200 transition-colors duration-200" id="mobileMenuBtn" aria-label="Menú">
+              <svg class="h-6 w-6" id="menuIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <svg class="h-6 w-6 hidden" id="closeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile -->
+    <div class="mobile-menu md:hidden bg-blue-700" id="mobileMenu">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <a href="index.html" class="block text-white hover:text-blue-200 hover:bg-blue-600 px-3 py-2 text-base font-medium rounded">INICIO</a>
+        <a href="nosotros.html" class="block text-white hover:text-blue-200 hover:bg-blue-600 px-3 py-2 text-base font-medium rounded">NOSOTROS</a>
+        <a href="catalogo.html" class="block text-white hover:text-blue-200 hover:bg-blue-600 px-3 py-2 text-base font-medium rounded">CATÁLOGO</a>
+        <a href="contacto.html" class="block text-white hover:text-blue-200 hover:bg-blue-600 px-3 py-2 text-base font-medium rounded">CONTACTO</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======= MAIN ======= -->
+  <main>
+
+    <!-- ===== Bandas Intralox (texto en esquina inferior izquierda) ===== -->
+    <section class="relative w-full h-[70vh]">
+      <img src="./public/images/Productos/bandamodular6.jpeg" alt="Bandas Intralox"
+           class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/70 to-transparent"></div>
+
+      <!-- Bloque pegado a la esquina -->
+      <div class="absolute left-0 bottom-0 p-3 sm:p-4 md:p-5 lg:p-6">
+        <div class="text-white max-w-sm sm:max-w-md lg:max-w-lg">
+          <h2 class="text-4xl md:text-6xl font-extrabold leading-tight drop-shadow">Bandas Intralox</h2>
+          <ul class="mt-4 sm:mt-5 space-y-2 sm:space-y-3 text-base sm:text-lg md:text-xl text-white/95">
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Bandas modulares rectas y curvas</li>
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Accesorios, sprockets y guías</li>
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Instalación, empalme y soporte técnico</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Estructural ===== -->
+    <section class="relative w-full h-[70vh]">
+      <img src="./public/images/Categorias/transportadores.jpeg" alt="Estructural"
+           class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/70 to-transparent"></div>
+
+      <div class="absolute left-0 bottom-0 p-3 sm:p-4 md:p-5 lg:p-6">
+        <div class="text-white max-w-sm sm:max-w-md lg:max-w-lg">
+          <h2 class="text-4xl md:text-6xl font-extrabold leading-tight drop-shadow">Estructural</h2>
+          <ul class="mt-4 sm:mt-5 space-y-2 sm:space-y-3 text-base sm:text-lg md:text-xl text-white/95">
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Techos</li>
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Contenedores</li>
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Mezzanine</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Industrial ===== -->
+    <section class="relative w-full h-[70vh]">
+      <img src="./public/images/Productos/engranaje1.jpeg" alt="Industrial"
+           class="absolute inset-0 w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/70 to-transparent"></div>
+
+      <div class="absolute left-0 bottom-0 p-3 sm:p-4 md:p-5 lg:p-6">
+        <div class="text-white max-w-sm sm:max-w-md lg:max-w-lg">
+          <h2 class="text-4xl md:text-6xl font-extrabold leading-tight drop-shadow">Industrial</h2>
+          <ul class="mt-4 sm:mt-5 space-y-2 sm:space-y-3 text-base sm:text-lg md:text-xl text-white/95">
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Engranajes y guías</li>
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Tornillos y varillas</li>
+            <li class="flex gap-3"><span class="mt-2 h-2.5 w-2.5 rounded-full bg-white/90"></span>Rodamientos y accesorios</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======= SCRIPTS ======= -->
+  <script>
+    // Menú móvil
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    mobileMenuBtn?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+      menuIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    });
+
+    // Demo carrito
+    let cartCount = 0;
+    const cartCountElement = document.getElementById('cartCount');
+    function updateCartCount(){ cartCountElement.textContent = cartCount; cartCountElement.classList.toggle('hidden', cartCount===0); cartCountElement.classList.toggle('flex', cartCount>0); }
+    setTimeout(()=>{ cartCount=1; updateCartCount(); },1200);
+
+    // Dropdown usuario
+    const userBtn  = document.getElementById('userBtn');
+    const userMenu = document.getElementById('userMenu');
+    function showMenu(){ userMenu.classList.remove('invisible','opacity-0','pointer-events-none'); }
+    function hideMenu(){ userMenu.classList.add('invisible','opacity-0','pointer-events-none'); }
+    userBtn?.addEventListener('click', (e)=>{ e.stopPropagation(); userMenu.classList.contains('invisible') ? showMenu() : hideMenu(); });
+    document.addEventListener('click', hideMenu);
+    window.addEventListener('scroll', hideMenu, { passive:true });
+  </script>
+
+  <script type="module" src="./js/header.js"></script>
+
+  <script src="/PG21.0/proyecto/js/cart.js"></script>
+<script>
+  function updateCartCount(){
+    const el = document.getElementById('cart-count');
+    if(!el || !window.CartAPI) return;
+    const qty = (CartAPI.getCart()||[]).reduce((a,p)=>a+(p.qty||1),0);
+    el.textContent = qty;
+    el.style.display = qty>0 ? 'inline-block' : 'none';
+  }
+  updateCartCount();
+  document.addEventListener('cart:updated', updateCartCount);
+</script>
+
+</body>
+</html>

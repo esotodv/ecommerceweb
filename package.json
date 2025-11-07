@@ -1,0 +1,14 @@
+{
+  "name": "infymsa-ecommerce",
+  "private": true,
+  "scripts": {
+    "lint:html": "htmlhint \"**/*.html\"",
+    "lint:js": "eslint \"**/*.js\" --max-warnings=0",
+    "lint": "npm run lint:html && npm run lint:js",
+    "build": "rm -rf dist && mkdir -p dist && rsync -av --delete --exclude='dist/**' --exclude='.git/**' --exclude='.github/**' --exclude='node_modules/**' ./ dist/"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "htmlhint": "^1.1.4"
+  }
+}

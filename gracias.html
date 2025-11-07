@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gracias por tu compra | INFYMSA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/PG21.0/proyecto/catalogo.html" class="text-white/90 hover:text-white">← Volver al catálogo</a>
+      <h1 class="text-xl sm:text-2xl font-extrabold">Gracias por tu compra</h1>
+      <div></div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-10">
+    <div class="bg-white rounded-2xl shadow p-6">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold mb-1">¡Pedido recibido!</h2>
+        <p id="orderId" class="text-sm text-gray-600"></p>
+      </div>
+
+      <section class="mb-4">
+        <h3 class="font-semibold mb-2">Datos de envío</h3>
+        <div id="checkoutData" class="text-sm text-gray-700 space-y-1"></div>
+      </section>
+
+      <section class="mb-4">
+        <h3 class="font-semibold mb-2">Resumen de la compra</h3>
+        <div id="itemsList" class="space-y-3"></div>
+      </section>
+
+      <div class="flex items-center justify-between mt-4">
+        <div class="text-lg font-bold" id="totalsText"></div>
+        <div class="flex gap-3">
+          <button id="btnInvoice" class="rounded-xl bg-blue-600 text-white px-4 py-2 hover:bg-blue-700">
+            Generar factura (PDF)
+          </button>
+          <a href="/PG21.0/proyecto/catalogo.html" class="rounded-xl bg-gray-100 px-4 py-2 hover:bg-gray-200">
+            Seguir comprando
+          </a>
+        </div>
+      </div>
+
+      <p class="mt-4 text-xs text-gray-500">
+       
+      </p>
+    </div>
+  </main>
+
+  <script src="/PG21.0/proyecto/js/cart.js"></script>
+  <script>
+    (function(){
+      const raw = sessionStorage.getItem('order_complete');
+      if(!raw){ location.href = '/PG21.0/proyecto/catalogo.html'; return; }
+      const order = JSON.parse(raw);
+
+      document.getElementById('orderId').textContent =
+        `Número de orden: ${order.id} • ${new Date(order.date).toLocaleString()}`;
+
+      const ck = order.checkout || {};
+      const lines = [];
+      if (ck.nombre)       lines.push(`<strong>Nombre:</strong> ${esc(ck.nombre)}`);
+      if (ck.correo)       lines.push(`<strong>Correo:</strong> ${esc(ck.correo)}`);
+      if (ck.telefono)     lines.push(`<strong>Teléfono:</strong> ${esc(ck.telefono)}`);
+      if (ck.direccion)    lines.push(`<strong>Dirección:</strong> ${esc(ck.direccion)}`);
+      if (ck.ciudad || ck.departamento)
+        lines.push(`<strong>Ciudad/Depto:</strong> ${esc(ck.ciudad||'')} ${ck.departamento?('/ '+esc(ck.departamento)) : ''}`);
+      document.getElementById('checkoutData').innerHTML = lines.length ? lines.join('<br>') : '<em>Sin datos</em>';
+
+      const itemsHtml = (order.items||[]).map(it => `
+        <div class="flex items-center gap-3 border rounded p-3">
+          <div class="w-16 h-16 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+            ${it.imagen ? `<img src="${it.imagen}" class="w-full h-full object-cover">` : `<span class="text-xs text-gray-400">Sin imagen</span>`}
+          </div>
+          <div class="flex-1">
+            <div class="font-medium">${esc(it.nombre||'')}</div>
+            <div class="text-xs text-gray-500">x${it.qty} • ${CartAPI.formatQ(it.precio||0)}</div>
+          </div>
+          <div class="font-medium">${CartAPI.formatQ((it.precio||0)*(it.qty||1))}</div>
+        </div>
+      `).join('');
+      document.getElementById('itemsList').innerHTML = itemsHtml || '<div class="text-sm text-gray-600">Sin items</div>';
+
+      const t = order.totals || {subtotal:0, envio:0, total:0};
+      document.getElementById('totalsText').innerHTML = `
+        <div class="text-right">
+          <div class="text-sm">Subtotal: ${CartAPI.formatQ(t.subtotal)}</div>
+          <div class="text-sm">Envío: ${CartAPI.formatQ(t.envio)}</div>
+          <div class="text-lg font-bold">Total: ${CartAPI.formatQ(t.total)}</div>
+        </div>`;
+
+      document.getElementById('btnInvoice').addEventListener('click', ()=>{
+        const w = window.open('', '_blank', 'width=900,height=800');
+        if(!w){ alert('Permite ventanas emergentes para imprimir.'); return; }
+        w.document.write(invoiceHtml(order));
+        w.document.close(); w.focus();
+        setTimeout(()=> w.print(), 400);
+      });
+
+      function invoiceHtml(order){
+        const rows = (order.items||[]).map(it => `
+          <tr>
+            <td>${esc(it.nombre||'')}</td>
+            <td style="text-align:center">${it.qty||1}</td>
+            <td style="text-align:right">${CartAPI.formatQ(it.precio||0)}</td>
+            <td style="text-align:right">${CartAPI.formatQ((it.precio||0)*(it.qty||1))}</td>
+          </tr>`).join('');
+
+        return `
+          <!doctype html><html><head><meta charset="utf-8">
+          <title>Factura ${order.id}</title>
+          <style>
+            body{font-family:Arial,Helvetica,sans-serif;color:#111;padding:24px}
+            .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+            .logo{font-weight:700;color:#0b3ea9;font-size:18px}
+            .meta{font-size:12px;text-align:right}
+            table{width:100%;border-collapse:collapse;margin-top:12px}
+            th,td{border:1px solid #ddd;padding:8px;font-size:13px}
+            th{background:#f6f6f6;text-align:left}
+            tfoot td{font-weight:700}
+          </style></head><body>
+          <div class="hdr">
+            <div><div class="logo">INFYMSA</div><div style="font-size:12px;color:#555">Soluciones Industriales</div></div>
+            <div class="meta">
+              <div>Factura </div>
+              <div>Orden: ${order.id}</div>
+              <div>${new Date(order.date).toLocaleString()}</div>
+            </div>
+          </div>
+          <div style="margin-bottom:10px">
+            <strong>Facturar a:</strong><br>
+            ${esc(order.checkout?.nombre||'')}<br>
+            ${esc(order.checkout?.direccion||'')}<br>
+            ${esc(order.checkout?.ciudad||'')} ${esc(order.checkout?.departamento||'')}<br>
+            ${esc(order.checkout?.correo||'')}
+          </div>
+          <table>
+            <thead><tr>
+              <th>Producto</th><th style="width:80px;text-align:center">Cant.</th>
+              <th style="width:120px;text-align:right">Precio</th>
+              <th style="width:120px;text-align:right">Total</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+            <tfoot>
+              <tr><td colspan="3" style="text-align:right">Subtotal</td><td style="text-align:right">${CartAPI.formatQ(order.totals?.subtotal||0)}</td></tr>
+              <tr><td colspan="3" style="text-align:right">Envío</td><td style="text-align:right">${CartAPI.formatQ(order.totals?.envio||0)}</td></tr>
+              <tr><td colspan="3" style="text-align:right">Total</td><td style="text-align:right">${CartAPI.formatQ(order.totals?.total||0)}</td></tr>
+            </tfoot>
+          </table>
+          <p style="margin-top:20px;font-size:12px;color:#666">Somos su mejor opcion</p>
+          </body></html>`;
+      }
+
+      function esc(s){return s?String(s).replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])):''}
+    })();
+  </script>
+</body>
+</html>

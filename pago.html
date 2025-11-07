@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pago | INFYMSA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <header class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/PG21.0/proyecto/checkout.html" class="text-white/90 hover:text-white">← Volver</a>
+      <h1 class="text-xl sm:text-2xl font-extrabold">Método de pago</h1>
+      <div></div>
+    </div>
+  </header>
+
+  <!-- MAIN centrado con panel elegante -->
+  <main class="min-h-screen bg-gradient-to-b from-blue-600 to-blue-800 flex justify-center items-center px-4 py-10">
+
+    <div class="max-w-6xl w-full bg-white/90 rounded-3xl shadow-xl ring-1 ring-black/5 p-6 sm:p-8 grid gap-6 lg:grid-cols-[2fr_1fr]">
+
+      <!-- Formulario -->
+      <section class="bg-white rounded-2xl shadow p-6">
+        <h2 class="font-semibold mb-4">Selecciona un método</h2>
+        <form id="pay-form" class="space-y-4">
+          <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer hover:bg-gray-50">
+            <input type="radio" name="metodo" value="visa" required class="accent-blue-600">
+            <span>Visa</span>
+          </label>
+          <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer hover:bg-gray-50">
+            <input type="radio" name="metodo" value="mastercard" class="accent-blue-600">
+            <span>Mastercard</span>
+          </label>
+          <label class="flex items-center gap-3 border rounded-xl p-3 cursor-pointer hover:bg-gray-50">
+            <input type="radio" name="metodo" value="paypal" class="accent-blue-600">
+            <span>PayPal</span>
+          </label>
+
+          <div id="card-fields" class="grid gap-3 sm:grid-cols-2 mt-2">
+            <input name="numero" placeholder="Número de tarjeta" class="border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-600">
+            <input name="nombre" placeholder="Nombre en la tarjeta" class="border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-600">
+            <input name="exp" placeholder="MM/AA" class="border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-600">
+            <input name="cvv" placeholder="CVV" class="border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-600">
+          </div>
+
+          <div class="pt-2 flex justify-center">
+            <button class="rounded-xl bg-emerald-600 text-white px-5 py-2.5 hover:bg-emerald-700 shadow-md">
+              Pagar ahora
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Resumen -->
+      <aside class="bg-white rounded-2xl shadow p-6 lg:sticky lg:top-6 h-max">
+        <h2 class="font-semibold mb-3">Resumen del pedido</h2>
+        <div id="items" class="space-y-3 mb-3"></div>
+        <hr class="my-2">
+        <div class="flex justify-between text-sm mb-1">
+          <span>Subtotal</span><span id="subtotal">Q 0.00</span>
+        </div>
+        <div class="flex justify-between text-sm mb-3">
+          <span>Envío</span><span id="envio">Q 0.00</span>
+        </div>
+        <div class="flex justify-between font-bold text-lg">
+          <span>Total</span><span id="total">Q 0.00</span>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <script src="/PG21.0/proyecto/js/cart.js"></script>
+  <script>
+    // Si carrito vacío, regresar
+    if (!CartAPI.getCart().length) location.href = '/PG21.0/proyecto/carrito.html';
+
+    // Render resumen
+    const items = CartAPI.getCart();
+    document.getElementById('items').innerHTML = items.map(p => `
+      <div class="flex items-center gap-3">
+        <div class="w-14 h-14 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+          ${p.imagen ? `<img src="${p.imagen}" class="w-full h-full object-cover">` : `<span class="text-xs text-gray-400">Sin</span>`}
+        </div>
+        <div class="flex-1">
+          <p class="font-medium">${p.nombre}</p>
+          <p class="text-xs text-gray-500">x${p.qty}</p>
+        </div>
+        <div class="font-medium">${CartAPI.formatQ(p.precio * p.qty)}</div>
+      </div>
+    `).join('');
+    const t = CartAPI.totals();
+    document.getElementById('subtotal').textContent = CartAPI.formatQ(t.subtotal);
+    document.getElementById('envio').textContent = CartAPI.formatQ(t.envio);
+    document.getElementById('total').textContent = CartAPI.formatQ(t.total);
+
+    // Mostrar/ocultar campos tarjeta si elige PayPal
+    const form = document.getElementById('pay-form');
+    const cardFields = document.getElementById('card-fields');
+    form.addEventListener('change', () => {
+      const metodo = form.elements.metodo.value;
+      cardFields.style.display = (metodo === 'paypal') ? 'none' : '';
+    });
+
+    // ====== NUEVA LÓGICA DE SUBMIT (crea orden, guarda y redirige a thankyou.html) ======
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const metodo = form.elements.metodo && form.elements.metodo.value;
+      if (!metodo) {
+        alert('Por favor selecciona un método de pago.');
+        return;
+      }
+
+      const orderId  = 'ORD-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      const checkout = JSON.parse(localStorage.getItem('checkout_v1') || '{}');
+      const cart     = CartAPI.getCart();
+      const totals   = CartAPI.totals();
+
+      const order = {
+        id: orderId,
+        metodo,
+        date: new Date().toISOString(),
+        checkout,
+        items: cart,
+        totals
+      };
+
+      // Guardamos la orden para la página de gracias
+      sessionStorage.setItem('order_complete', JSON.stringify(order));
+
+      // Limpiamos SOLO el carrito (dejamos checkout por si se requiere)
+      CartAPI.clearCart();
+
+      // Redirigimos a "Gracias"
+      location.href = '/PG21.0/proyecto/gracias.html';
+    });
+  </script>
+</body>
+</html>

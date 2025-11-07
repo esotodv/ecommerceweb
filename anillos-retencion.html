@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anillos de retención | INFYMSA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- ===== Header centrado y responsive ===== -->
+  <header class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-center">
+        <div class="flex justify-center sm:justify-start">
+          <a href="./catalogo.html" class="inline-flex items-center gap-2 text-white/90 hover:text-white transition">
+            <span aria-hidden="true">←</span>
+            <span class="font-semibold">Catálogo</span>
+          </a>
+        </div>
+
+        <div class="flex justify-center">
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-center">
+            Anillos de retención
+          </h1>
+        </div>
+
+        <div class="flex justify-center sm:justify-end">
+          <div class="w-full sm:w-80 lg:w-96">
+            <label for="q" class="sr-only">Buscar</label>
+            <input
+              id="q"
+              type="search"
+              placeholder="Buscar… (interno, externo, 25mm)"
+              class="w-full px-4 py-2.5 rounded-xl bg-white/95 text-gray-800 placeholder:text-gray-500
+                     shadow-md border border-white/20 outline-none
+                     focus:ring-4 focus:ring-white/30 focus:border-white/40"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Contenido ===== -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div id="status" class="text-sm text-gray-600 mb-4">Cargando…</div>
+    <section id="grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></section>
+  </main>
+
+  <!-- Template de tarjeta (lo usa el JS para renderizar cada producto) -->
+  <template id="cardTpl">
+    <article class="bg-white rounded-2xl shadow overflow-hidden"
+             data-id="" data-nombre="" data-precio="" data-imagen="" data-descripcion="">
+      <div class="w-full h-56 bg-gray-100">
+        <img data-el="img" src="" alt="" class="w-full h-full object-cover">
+      </div>
+
+      <div class="p-4">
+        <div class="flex items-center justify-between">
+          <button
+            class="btn-add-cart inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-white hover:opacity-90"
+            style="background:#0b3ea9"
+            data-id="" data-nombre="" data-precio="" data-imagen="" data-descripcion="">
+            🛒 Agregar
+          </button>
+          <span class="text-lg font-bold" data-el="price">Q0.00</span>
+        </div>
+
+        <p class="mt-2 text-sm text-gray-600" data-el="brand">Anillos de retención</p>
+        <p class="text-gray-900 font-semibold" data-el="name">Nombre</p>
+        <p class="text-sm text-gray-600 mt-1" data-el="desc"></p>
+      </div>
+    </article>
+  </template>
+
+  <script type="module" src="/PG21.0/proyecto/js/anillos-retencion.js"></script>
+<script src="/PG21.0/proyecto/js/cart.js"></script>
+
+</body>
+</html>

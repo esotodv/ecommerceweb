@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guías UHMW | INFYMSA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- ===== Barra superior ===== -->
+  <header class="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <!-- Volver -->
+      <a href="./catalogo.html" class="inline-flex items-center gap-2 text-white/90 hover:text-white">
+        <span>←</span> <span class="font-semibold">Catálogo</span>
+      </a>
+
+      <!-- Título -->
+      <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+        Guías UHMW
+      </h1>
+
+      <!-- Buscador -->
+      <div class="flex items-center">
+        <label for="q" class="sr-only">Buscar</label>
+        <input
+          id="q"
+          type="search"
+          placeholder="Buscar… (guias, uhmw, perfiles, topes)"
+          class="w-56 md:w-80 px-3 py-2 rounded-lg bg-white/95 text-gray-800 shadow focus:outline-none"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Contenido ===== -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Estado / contador -->
+    <div id="status" class="text-sm text-gray-500 mb-4"></div>
+
+    <!-- Grid de productos -->
+    <section id="grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></section>
+  </main>
+
+  <!-- Lógica de la página -->
+ <script type="module" src="./js/guias-uhmw.js"></script>
+<script src="/PG21.0/proyecto/js/cart.js"></script>
+
+</body>
+</html>
